@@ -8,10 +8,13 @@ st.title("📊 Distribuição de Notas (7 a 10)")
 uploaded_file = st.file_uploader("📂 Envie o arquivo Excel (.xlsx)", type=["xlsx"])
 
 if uploaded_file:
-    # Carrega o arquivo
+    # Lê todas as abas disponíveis
     xl = pd.ExcelFile(uploaded_file, engine="openpyxl")
-    primeira_aba = xl.sheet_names[0]
-    df = xl.parse(primeira_aba)
+    abas = xl.sheet_names
+    aba_selecionada = st.selectbox("🗂️ Selecione a planilha", abas)
+
+    # Lê a aba selecionada
+    df = xl.parse(aba_selecionada)
     df.columns = df.columns.str.strip()
 
     # Define os blocos de perguntas
@@ -99,3 +102,4 @@ if uploaded_file:
 
 else:
     st.info("📎 Envie um arquivo Excel com 9 colunas de perguntas com notas de 0 a 10.")
+
