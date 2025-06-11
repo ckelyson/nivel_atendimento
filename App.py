@@ -26,7 +26,7 @@ if uploaded_file:
     indicadores = ["Produtividade", "Qualidade", "Segurança"]
 
     # Listas dos empilhadores por turno
-    turno_a = ["Alison", "Aucimar", "Adilson", "André", "Fabiano"]
+    turno_a = ["Alison", "Aucimar", "Adilson", "Andre", "Fabiano"]
     turno_b_c = ["Edivan", "Ezequias", "Genivaldo", "João Gomes", "João Vitor", "Leandro", "Obério", "Jhone Kened"]
 
     # Calcula média por empilhador (todos)
