@@ -68,7 +68,7 @@ if uploaded_file is not None:
             notas = pd.Series(notas).dropna()
             counts = notas.value_counts().sort_index()
             colors = [cor_nota(int(n)) for n in counts.index]
-            fig, ax = plt.subplots(figsize=(4, 4))  # Gráficos gerais menores
+            fig, ax = plt.subplots(figsize=(2, 2))  # Gráficos gerais menores
             ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
             ax.axis('equal')
             st.pyplot(fig)
