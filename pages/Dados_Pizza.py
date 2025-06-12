@@ -53,7 +53,7 @@ if uploaded_file is not None:
                         autopct='%1.1f%%',
                         startangle=90,
                         colors=colors,
-                        textprops={'fontsize': 8}
+                        textprops={'fontsize': 5}
                     )
                     ax.axis('equal')
                     st.pyplot(fig)
