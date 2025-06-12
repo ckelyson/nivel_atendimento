@@ -23,9 +23,9 @@ if uploaded_file is not None:
     df = excel.parse(selected_sheet)
     df.columns = df.columns.str.strip()  # remover espaços
 
-    # Verifica se existe a coluna 'Empilhador'
-    if "Empilhador" not in df.columns:
-        st.error("A coluna 'Empilhador' não foi encontrada. Verifique o nome exato da coluna no seu arquivo.")
+    # Verifica se existe a coluna 'Empilhador:'
+    if "Empilhador:" not in df.columns:
+        st.error("A coluna 'Empilhador:' não foi encontrada. Verifique o nome exato da coluna no seu arquivo.")
     else:
         # Ignorar últimas 4 colunas
         df_notas = df.iloc[:, :-4]
@@ -64,8 +64,8 @@ if uploaded_file is not None:
                     st.caption(f"Distribuição de notas para: **{col}**")
 
         # Filtrar por turno
-        df_turno_a = df[df['Empilhador'].isin(turno_a)]
-        df_turno_b_c = df[df['Empilhador'].isin(turno_b_c)]
+        df_turno_a = df[df['Empilhador:'].isin(turno_a)]
+        df_turno_b_c = df[df['Empilhador:'].isin(turno_b_c)]
 
         # Exibir gráficos para cada turno
         desenhar_graficos(df_turno_a, "A")
