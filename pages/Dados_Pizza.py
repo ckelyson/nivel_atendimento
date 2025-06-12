@@ -56,23 +56,32 @@ if uploaded_file is not None:
                 with colunas[i % 3]:
                     counts = df_filtrado[col].value_counts().sort_index()
                     colors = [cor_nota(n) for n in counts.index]
-                    fig, ax = plt.subplots(figsize=(3.5, 3.5))  # Gráficos menores
+                    fig, ax = plt.subplots(figsize=(3.5, 3.5))
                     ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
                     ax.axis('equal')
                     st.pyplot(fig)
                     st.caption(f"Distribuição de notas para: **{col}**")
 
-        # Gráficos gerais por categoria
-        def grafico_categoria(df_turno, grupo_colunas, titulo):
-            notas = df_turno[grupo_colunas].values.flatten()
-            notas = pd.Series(notas).dropna()
-            counts = notas.value_counts().sort_index()
-            colors = [cor_nota(int(n)) for n in counts.index]
-            fig, ax = plt.subplots(figsize=(2, 2))  # Gráficos gerais menores
-            ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
-            ax.axis('equal')
-            st.pyplot(fig)
-            st.caption(f"**{titulo}**")
+        # Gráficos gerais por categoria lado a lado
+        def graficos_gerais_lado_a_lado(df_turno, titulo_turno):
+            st.subheader(f"Geral por Categoria - Turno {titulo_turno}")
+            categorias = {
+                "Produtividade": nota_cols[0:3],
+                "Segurança": nota_cols[3:6],
+                "Qualidade": nota_cols[6:9],
+            }
+            colunas = st.columns(3)
+            for i, (nome_cat, colunas_cat) in enumerate(categorias.items()):
+                notas = df_turno[colunas_cat].values.flatten()
+                notas = pd.Series(notas).dropna()
+                counts = notas.value_counts().sort_index()
+                colors = [cor_nota(int(n)) for n in counts.index]
+                with colunas[i]:
+                    fig, ax = plt.subplots(figsize=(2.5, 2.5))  # Gráficos bem menores
+                    ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+                    ax.axis('equal')
+                    st.pyplot(fig)
+                    st.caption(f"**{nome_cat}**")
 
         # Filtrar por turno
         df_turno_a = df[df['Empilhador:'].isin(turno_a)]
@@ -84,19 +93,7 @@ if uploaded_file is not None:
 
         # Verificar se há colunas suficientes
         if len(nota_cols) >= 9:
-            # Categorias fixas
-            produtividade_cols = nota_cols[0:3]
-            seguranca_cols = nota_cols[3:6]
-            qualidade_cols = nota_cols[6:9]
-
-            st.subheader("Geral por Categoria - Turno A")
-            grafico_categoria(df_turno_a, produtividade_cols, "Produtividade")
-            grafico_categoria(df_turno_a, seguranca_cols, "Segurança")
-            grafico_categoria(df_turno_a, qualidade_cols, "Qualidade")
-
-            st.subheader("Geral por Categoria - Turno B/C")
-            grafico_categoria(df_turno_b_c, produtividade_cols, "Produtividade")
-            grafico_categoria(df_turno_b_c, seguranca_cols, "Segurança")
-            grafico_categoria(df_turno_b_c, qualidade_cols, "Qualidade")
+            graficos_gerais_lado_a_lado(df_turno_a, "A")
+            graficos_gerais_lado_a_lado(df_turno_b_c, "B/C")
         else:
             st.warning("São necessárias pelo menos 9 colunas de nota para gerar os gráficos por categoria.")
