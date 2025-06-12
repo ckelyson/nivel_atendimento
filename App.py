@@ -80,3 +80,4 @@ if uploaded_file:
 
 else:
     st.info("📎 Envie o arquivo Excel com as colunas: Empilhador, Produtividade, Qualidade, Segurança e Total.")
+
