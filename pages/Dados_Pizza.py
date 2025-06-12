@@ -23,14 +23,13 @@ if uploaded_file is not None:
     df = excel.parse(selected_sheet)
     df.columns = df.columns.str.strip()  # remover espaços
 
-    # Verifica se existe a coluna 'Empilhador:'
     if "Empilhador:" not in df.columns:
         st.error("A coluna 'Empilhador:' não foi encontrada. Verifique o nome exato da coluna no seu arquivo.")
     else:
         # Ignorar últimas 4 colunas
         df_notas = df.iloc[:, :-4]
 
-        # Identificar colunas de nota
+        # Identificar colunas com notas válidas de 0 a 10
         nota_cols = [
             col for col in df_notas.columns
             if df_notas[col].dropna().apply(lambda x: isinstance(x, (int, float)) and 0 <= x <= 10).all()
@@ -49,9 +48,9 @@ if uploaded_file is not None:
             else:
                 return '#e74c3c'  # vermelho
 
-        # Função para desenhar gráficos por turno
+        # Gráficos individuais por coluna de nota
         def desenhar_graficos(df_filtrado, turno_nome):
-            st.subheader(f"Turno {turno_nome}")
+            st.subheader(f"Gráficos Individuais - Turno {turno_nome}")
             colunas = st.columns(3)
             for i, col in enumerate(nota_cols):
                 with colunas[i % 3]:
@@ -63,10 +62,41 @@ if uploaded_file is not None:
                     st.pyplot(fig)
                     st.caption(f"Distribuição de notas para: **{col}**")
 
+        # Gráficos gerais por categoria
+        def grafico_categoria(df_turno, grupo_colunas, titulo):
+            notas = df_turno[grupo_colunas].values.flatten()
+            notas = pd.Series(notas).dropna()
+            counts = notas.value_counts().sort_index()
+            colors = [cor_nota(int(n)) for n in counts.index]
+            fig, ax = plt.subplots()
+            ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+            ax.axis('equal')
+            st.pyplot(fig)
+            st.caption(f"**{titulo}**")
+
         # Filtrar por turno
         df_turno_a = df[df['Empilhador:'].isin(turno_a)]
         df_turno_b_c = df[df['Empilhador:'].isin(turno_b_c)]
 
-        # Exibir gráficos para cada turno
+        # Exibir gráficos individuais
         desenhar_graficos(df_turno_a, "A")
         desenhar_graficos(df_turno_b_c, "B/C")
+
+        # Verificar se há colunas suficientes
+        if len(nota_cols) >= 9:
+            # Categorias fixas
+            produtividade_cols = nota_cols[0:3]
+            seguranca_cols = nota_cols[3:6]
+            qualidade_cols = nota_cols[6:9]
+
+            st.subheader("Geral por Categoria - Turno A")
+            grafico_categoria(df_turno_a, produtividade_cols, "Produtividade")
+            grafico_categoria(df_turno_a, seguranca_cols, "Segurança")
+            grafico_categoria(df_turno_a, qualidade_cols, "Qualidade")
+
+            st.subheader("Geral por Categoria - Turno B/C")
+            grafico_categoria(df_turno_b_c, produtividade_cols, "Produtividade")
+            grafico_categoria(df_turno_b_c, seguranca_cols, "Segurança")
+            grafico_categoria(df_turno_b_c, qualidade_cols, "Qualidade")
+        else:
+            st.warning("São necessárias pelo menos 9 colunas de nota para gerar os gráficos por categoria.")
