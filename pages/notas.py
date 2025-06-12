@@ -31,6 +31,8 @@ if uploaded_file:
         notas_percentual = notas_media / 10
         notas_percentual = notas_percentual.sort_values("Total")  # ordena por Total
 
+    
+
         # Gráfico
         st.subheader("📈 Total (%) por Líder")
         df_grafico = notas_percentual.reset_index()
@@ -63,4 +65,3 @@ if uploaded_file:
         st.warning("❗ A aba selecionada não contém as colunas: Líder de manufatura, Produtividade, Segurança e Qualidade.")
 else:
     st.info("📎 Envie um arquivo Excel com as colunas de notas dos líderes.")
-
