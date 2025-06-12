@@ -32,14 +32,30 @@ if uploaded_file is not None:
         if df_notas[col].dropna().apply(lambda x: isinstance(x, (int, float)) and 0 <= x <= 10).all()
     ]
 
+    # Mapeamento de cores por nota
+    def cor_nota(nota):
+        if nota == 10:
+            return '#2ecc71'  # verde
+        elif nota == 9:
+            return '#3498db'  # azul
+        elif nota == 8:
+            return '#f1c40f'  # amarelo
+        elif nota == 7:
+            return '#e67e22'  # laranja
+        else:
+            return '#e74c3c'  # vermelho
+
     colunas = st.columns(3)
     for i, col in enumerate(nota_cols):
         with colunas[i % 3]:
             counts = df_notas[col].value_counts().sort_index()
+            colors = [cor_nota(nota) for nota in counts.index]
+
             fig, ax = plt.subplots()
-            ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90)
+            ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
             ax.axis('equal')
             st.pyplot(fig)
             st.caption(f"Distribuição de notas para: **{col}**")
+
 
 
