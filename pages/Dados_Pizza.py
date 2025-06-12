@@ -12,29 +12,34 @@ if uploaded_file is not None:
     excel = pd.ExcelFile(uploaded_file)
     sheet_names = excel.sheet_names
 
-    for sheet in sheet_names:
-        st.header(f"Avaliações - {sheet}")
-        df = excel.parse(sheet)
+    # Selecionar a aba desejada
+    selected_sheet = st.selectbox("Selecione a aba (planilha):", sheet_names)
 
-        # Normalizar nomes das colunas (remover espaços extras, etc.)
-        df.columns = df.columns.str.strip()
+    # Carregar a planilha selecionada
+    df = excel.parse(selected_sheet)
 
-        # Ignorar as últimas 4 colunas
-        df_notas = df.iloc[:, :-4]
+    st.header(f"Avaliações - {selected_sheet}")
 
-        # Identificar colunas com notas de 0 a 10
-        nota_cols = [
-            col for col in df_notas.columns
-            if df_notas[col].dropna().apply(lambda x: isinstance(x, (int, float)) and 0 <= x <= 10).all()
-        ]
+    # Normalizar nomes das colunas
+    df.columns = df.columns.str.strip()
 
-        colunas = st.columns(3)
-        for i, col in enumerate(nota_cols):
-            with colunas[i % 3]:
-                counts = df_notas[col].value_counts().sort_index()
-                fig, ax = plt.subplots()
-                ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90)
-                ax.axis('equal')
-                st.pyplot(fig)
-                st.caption(f"Distribuição de notas para: **{col}**")
+    # Ignorar as últimas 4 colunas
+    df_notas = df.iloc[:, :-4]
+
+    # Identificar colunas com notas de 0 a 10
+    nota_cols = [
+        col for col in df_notas.columns
+        if df_notas[col].dropna().apply(lambda x: isinstance(x, (int, float)) and 0 <= x <= 10).all()
+    ]
+
+    colunas = st.columns(3)
+    for i, col in enumerate(nota_cols):
+        with colunas[i % 3]:
+            counts = df_notas[col].value_counts().sort_index()
+            fig, ax = plt.subplots()
+            ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90)
+            ax.axis('equal')
+            st.pyplot(fig)
+            st.caption(f"Distribuição de notas para: **{col}**")
+
 
