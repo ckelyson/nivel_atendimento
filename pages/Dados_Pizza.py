@@ -64,15 +64,16 @@ if uploaded_file is not None:
 
         # Gráficos gerais por categoria
         def grafico_categoria(df_turno, grupo_colunas, titulo):
-            notas = df_turno[grupo_colunas].values.flatten()
-            notas = pd.Series(notas).dropna()
-            counts = notas.value_counts().sort_index()
-            colors = [cor_nota(int(n)) for n in counts.index]
-            fig, ax = plt.subplots()
-            ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
-            ax.axis('equal')
-            st.pyplot(fig)
-            st.caption(f"**{titulo}**")
+        notas = df_turno[grupo_colunas].values.flatten()
+        notas = pd.Series(notas).dropna()
+        counts = notas.value_counts().sort_index()
+        colors = [cor_nota(int(n)) for n in counts.index]
+        fig, ax = plt.subplots(figsize=(4, 4))  # <- Reduzido aqui
+        ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+        ax.axis('equal')
+        st.pyplot(fig)
+        st.caption(f"**{titulo}**")
+
 
         # Filtrar por turno
         df_turno_a = df[df['Empilhador:'].isin(turno_a)]
